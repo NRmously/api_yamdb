@@ -132,9 +132,6 @@ SIMPLE_JWT = {
 
 EMAIl_ADRESS = "test@mail.com"
 
-# -
-CUT_STR_LONGER = 30
-
 FORBIDDEN_SYMBOL = r"^[\w.@+-]+$"
 
 AUTH_USER_MODEL = "users.User"
