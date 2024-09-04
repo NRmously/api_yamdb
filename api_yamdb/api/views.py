@@ -7,7 +7,7 @@ from .serializers import CategorySerializer, GenreSerializer, TitleGetSerializer
 from .permissions import IsAdminOrReadOnly
 
 
-class GenreSlugFilter(FilterSet):
+class GenreCategorySlugFilter(FilterSet):
     genre = CharFilter(field_name='genre__slug')
     category = CharFilter(field_name='category__slug')
 
@@ -23,7 +23,7 @@ class TitleViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAdminOrReadOnly,)
     http_method_names = ['get', 'post', 'patch', 'delete']
     filter_backends = (DjangoFilterBackend, filters.SearchFilter,)
-    filterset_class = GenreSlugFilter
+    filterset_class = GenreCategorySlugFilter
 
     def get_serializer_class(self):
         if self.action in ['list', 'retrieve']:
