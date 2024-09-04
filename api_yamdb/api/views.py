@@ -1,5 +1,6 @@
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import filters, viewsets
+# Импортировал миксины
+from rest_framework import filters, viewsets, mixins
 
 from reviews.models import Category, Genre, Title
 from .serializers import CategorySerializer, GenreSerializer, TitleSerializer, TitleGetSerializer
@@ -21,22 +22,33 @@ class TitleViewSet(viewsets.ModelViewSet):
         return TitleSerializer
 
 
-class CategoryViewSet(viewsets.ModelViewSet):
+# Добавил миксины для создания и удаления категорий
+# Добавил фильтры по id
+class CategoryViewSet(mixins.CreateModelMixin,
+                      mixins.ListModelMixin,
+                      mixins.DestroyModelMixin,
+                      viewsets.GenericViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     lookup_field = 'slug'
     permission_classes = (IsAdminOrReadOnly,)
     # pagination_class = PageNumberPagination
-    filter_backends = (filters.SearchFilter,)
+    filter_backends = (filters.SearchFilter, filters.OrderingFilter)
     search_fields = ('name',)
+    ordering = ('id',)
 
 
-class GenreViewSet(viewsets.ModelViewSet):
+# Добавил миксины для создания и удаления жанров
+# Добавил фильтры по id
+class GenreViewSet(mixins.CreateModelMixin,
+                   mixins.ListModelMixin,
+                   mixins.DestroyModelMixin,
+                   viewsets.GenericViewSet):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
     lookup_field = 'slug'
     permission_classes = (IsAdminOrReadOnly,)
     # pagination_class = LimitOffsetPagination
-    filter_backends = (filters.SearchFilter,)
+    filter_backends = (filters.SearchFilter, filters.OrderingFilter)
     search_fields = ('name',)
-
+    ordering = ('id',)
