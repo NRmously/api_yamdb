@@ -1,9 +1,6 @@
 from django_filters import CharFilter
 from django_filters.rest_framework import DjangoFilterBackend, FilterSet
-<<<<<<< HEAD
-=======
 from django.db.models import Avg
->>>>>>> feature/comments
 from rest_framework import filters, viewsets, mixins
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.generics import get_object_or_404
