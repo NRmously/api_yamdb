@@ -37,16 +37,34 @@ class TitleSerializer(serializers.ModelSerializer):
 class TitleGetSerializer(serializers.ModelSerializer):
     category = CategorySerializer(read_only=True)
     genre = GenreSerializer(many=True, read_only=True)
+    rating = serializers.IntegerField(
+        read_only=True,
+    )
 
     class Meta:
-        fields = ('id', 'name', 'year', 'category', 'genre', 'description')
+        fields = ('id', 'name', 'year', 'category', 'rating', 'genre', 'description')
         model = Title
+
 
 class ReviewSerializer(serializers.ModelSerializer):
     author = serializers.SlugRelatedField(
+        slug_field='username',
         read_only=True,
-        slug_field='username'
+        default=serializers.CurrentUserDefault()
     )
+
+    def validate(self, data):
+        request = self.context.get('request')
+        if request.method == 'POST':
+            review = Review.objects.filter(
+                title=self.context['view'].kwargs.get('title_id'),
+                author=self.context['request'].user
+            )
+            if review.exists():
+                raise serializers.ValidationError(
+                    'Ваш отзыв на это произведение уже опубликован'
+                )
+        return data
 
     class Meta:
         fields = ('id', 'text', 'author', 'score', 'pub_date')
