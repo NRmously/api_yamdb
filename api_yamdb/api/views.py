@@ -1,8 +1,8 @@
-from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import filters, viewsets, mixins, status
+from django_filters import CharFilter
+from django_filters.rest_framework import DjangoFilterBackend, FilterSet
+from rest_framework import filters, viewsets, mixins
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.generics import get_object_or_404
-from rest_framework.response import Response
 
 from reviews.models import Category, Genre, Title, Review
 from .serializers import (CategorySerializer, GenreSerializer, TitleSerializer,
@@ -11,13 +11,23 @@ from .serializers import (CategorySerializer, GenreSerializer, TitleSerializer,
 from .permissions import IsAdminOrReadOnly, IsHasPermission
 
 
+class GenreCategorySlugFilter(FilterSet):
+    genre = CharFilter(field_name='genre__slug')
+    category = CharFilter(field_name='category__slug')
+
+    class Meta:
+        model = Title
+        fields = ['name', 'year', 'category', 'genre']
+
+
+# Create your views here.
 class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all()
     serializer_class = TitleSerializer
     permission_classes = (IsAdminOrReadOnly,)
     http_method_names = ['get', 'post', 'patch', 'delete']
     filter_backends = (DjangoFilterBackend, filters.SearchFilter,)
-    filterset_fields = ('name', 'year', 'category', 'genre', 'category__slug', 'genre__slug',)
+    filterset_class = GenreCategorySlugFilter
 
     def get_serializer_class(self):
         if self.action in ['list', 'retrieve']:
@@ -25,8 +35,6 @@ class TitleViewSet(viewsets.ModelViewSet):
         return TitleSerializer
 
 
-# Добавил миксины для создания и удаления категорий
-# Добавил фильтры по id
 class CategoryViewSet(mixins.CreateModelMixin,
                       mixins.ListModelMixin,
                       mixins.DestroyModelMixin,
@@ -35,23 +43,19 @@ class CategoryViewSet(mixins.CreateModelMixin,
     serializer_class = CategorySerializer
     lookup_field = 'slug'
     permission_classes = (IsAdminOrReadOnly,)
-    # pagination_class = PageNumberPagination
     filter_backends = (filters.SearchFilter, filters.OrderingFilter)
     search_fields = ('name',)
     ordering = ('id',)
 
 
-# Добавил миксины для создания и удаления жанров
-# Добавил фильтры по id
 class GenreViewSet(mixins.CreateModelMixin,
-                   mixins.ListModelMixin,
-                   mixins.DestroyModelMixin,
-                   viewsets.GenericViewSet):
+                      mixins.ListModelMixin,
+                      mixins.DestroyModelMixin,
+                      viewsets.GenericViewSet):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
     lookup_field = 'slug'
     permission_classes = (IsAdminOrReadOnly,)
-    # pagination_class = LimitOffsetPagination
     filter_backends = (filters.SearchFilter, filters.OrderingFilter)
     search_fields = ('name',)
     ordering = ('id',)
