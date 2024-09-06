@@ -1,4 +1,7 @@
 from django.db import models
+from django.core.validators import MaxValueValidator, MinValueValidator
+
+from users.models import User
 
 
 class Genre(models.Model):
@@ -21,7 +24,8 @@ class Title(models.Model):
     name = models.CharField(max_length=256)
     year = models.IntegerField()
     description = models.TextField(blank=True, null=True)
-    category = models.ForeignKey(Category, on_delete=models.DO_NOTHING, related_name='titles')
+    category = models.ForeignKey(Category, on_delete=models.DO_NOTHING,
+                                 related_name='titles')
     genre = models.ManyToManyField(Genre, through='GenreTitle')
 
     def __str__(self):
@@ -31,17 +35,15 @@ class Title(models.Model):
 class GenreTitle(models.Model):
     genre = models.ForeignKey(Genre, on_delete=models.CASCADE)
     title = models.ForeignKey(Title, on_delete=models.CASCADE)
-from django.core.validators import MaxValueValidator, MinValueValidator
-from django.db import models
 
 
 class Review(models.Model):
     author = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name='reviews' # Соединить с моделью пользователя
+        User, on_delete=models.CASCADE, related_name='reviews'
     )
     text = models.TextField()
     title = models.ForeignKey(
-        Title, on_delete=models.CASCADE, related_name='reviews' # Соединить с моделью Title
+        Title, on_delete=models.CASCADE, related_name='reviews'
     )
     score = models.PositiveIntegerField(
         validators=[MinValueValidator(1), MaxValueValidator(10)]
@@ -67,7 +69,7 @@ class Review(models.Model):
 
 class Comment(models.Model):
     author = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name='comments' # Соединить с моделью пользователя.
+        User, on_delete=models.CASCADE, related_name='comments'
     )
     text = models.TextField
     review = models.ForeignKey(
