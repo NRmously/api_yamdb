@@ -182,6 +182,6 @@ GET-запрос на получение списка категорий
 
 
 # Работали над проектом:
-[bl00dimir](https://github.com/bl00dimir) titles, categories, genres and DB functional.
-[NRmously](https://github.com/NRmously) TeamLead, auth and users functional.
-[Wyjink](https://github.com/Wyjink) reviews, comments and rating functional.
+- [bl00dimir](https://github.com/bl00dimir) titles, categories, genres and DB functional.
+- [NRmously](https://github.com/NRmously) TeamLead, auth and users functional.
+- [Wyjink](https://github.com/Wyjink) reviews, comments and rating functional.
