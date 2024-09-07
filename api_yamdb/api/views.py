@@ -5,7 +5,7 @@ from rest_framework import filters, viewsets, mixins
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.generics import get_object_or_404
 
-from reviews.models import Category, Genre, Title
+from reviews.models import Category, Genre, Title, Review
 from .serializers import (CategorySerializer, GenreSerializer, TitleSerializer,
                           TitleGetSerializer, ReviewSerializer,
                           CommentSerializer)
@@ -81,19 +81,12 @@ class ReviewViewSet(viewsets.ModelViewSet):
 class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
     permission_classes = [IsAuthenticatedOrReadOnly, IsHasPermission]
+    http_method_names = ['get', 'post', 'delete', 'patch']
 
     def get_queryset(self):
-        title = get_object_or_404(Title, id=self.kwargs.get("title_id"))
-        try:
-            review = title.reviews.get(id=self.kwargs.get('review_id'))
-            return review.comments.all()
-        except TypeError:
-            TypeError('Нет отзыва')
+        review = get_object_or_404(Review, id=self.kwargs.get('review_id'))
+        return review.comments.all()
 
     def perform_create(self, serializer):
-        title = get_object_or_404(Title, id=self.kwargs.get('title_id'))
-        try:
-            review = title.reviews.get(id=self.kwargs.get('review_id'))
-            serializer.save(author=self.request.user, review=review)
-        except TypeError:
-            TypeError('Нет отзыва')
+        review = get_object_or_404(Review, id=self.kwargs.get('review_id'))
+        serializer.save(author=self.request.user, review=review)
