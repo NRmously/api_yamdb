@@ -1,15 +1,16 @@
+from django.db.models import Avg
+
 from django_filters import CharFilter
 from django_filters.rest_framework import DjangoFilterBackend, FilterSet
-from django.db.models import Avg
-from rest_framework import filters, viewsets, mixins
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework import filters, mixins, viewsets
 from rest_framework.generics import get_object_or_404
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
-from reviews.models import Category, Genre, Title, Review
-from .serializers import (CategorySerializer, GenreSerializer, TitleSerializer,
-                          TitleGetSerializer, ReviewSerializer,
-                          CommentSerializer)
+from reviews.models import Category, Genre, Review, Title
 from .permissions import IsAdminOrReadOnly, IsHasPermission
+from .serializers import (CategorySerializer, CommentSerializer,
+                          GenreSerializer, ReviewSerializer,
+                          TitleGetSerializer, TitleSerializer)
 
 
 class GenreCategorySlugFilter(FilterSet):
@@ -51,10 +52,12 @@ class CategoryViewSet(mixins.CreateModelMixin,
     ordering = ('id',)
 
 
-class GenreViewSet(mixins.CreateModelMixin,
-                      mixins.ListModelMixin,
-                      mixins.DestroyModelMixin,
-                      viewsets.GenericViewSet):
+class GenreViewSet(
+    mixins.CreateModelMixin,
+    mixins.ListModelMixin,
+    mixins.DestroyModelMixin,
+    viewsets.GenericViewSet
+):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
     lookup_field = 'slug'

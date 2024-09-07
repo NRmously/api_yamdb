@@ -1,18 +1,15 @@
 from django.contrib.auth.tokens import default_token_generator
 from django.shortcuts import get_object_or_404
-from rest_framework.exceptions import MethodNotAllowed
 from rest_framework import filters, mixins, permissions, status, viewsets
 from rest_framework.decorators import action
+from rest_framework.exceptions import MethodNotAllowed
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken
 
 from .models import User
 from .permissions import IsSuperUserOrIsAdmin
-from .serializers import (
-    UserCreateSerializer,
-    UserRecieveTokenSerializer,
-    UserSerializer
-)
+from .serializers import (UserCreateSerializer, UserRecieveTokenSerializer,
+                          UserSerializer)
 from .utils import send_confirmation_code
 
 
@@ -24,6 +21,7 @@ class UserCreateViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
     После успешного создания пользователя отправляет на его
     email код подтверждения.
     """
+
     permission_classes = (permissions.AllowAny,)
     serializer_class = UserCreateSerializer
 
@@ -64,6 +62,7 @@ class UserReceiveTokenViewSet(mixins.CreateModelMixin,
 
     Разрешает доступ всем пользователям.
     """
+
     queryset = User.objects.all()
     serializer_class = UserRecieveTokenSerializer
     permission_classes = (permissions.AllowAny,)
@@ -99,6 +98,7 @@ class UserViewSet(viewsets.ModelViewSet):
     Также предоставляет возможность частичного
     обновления данных текущего пользователя.
     """
+
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = (IsSuperUserOrIsAdmin,)

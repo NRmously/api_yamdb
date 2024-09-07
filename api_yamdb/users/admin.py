@@ -12,6 +12,7 @@ class UserAdmin(UserAdmin):
     возможность редактирования определённых полей и
     фильтрацию по имени пользователя.
     """
+
     list_display = (
         "username", "email", "first_name", "last_name", "bio", "role"
     )
