@@ -1,28 +1,41 @@
-from django.core.validators import MaxValueValidator, MinValueValidator
+from django.utils import timezone
+from django.core.validators import MaxValueValidator, MinValueValidator, ValidationError
 from django.db import models
 
 from users.models import User
 
 
-class Genre(models.Model):
+class CommonGenreCat(models.Model):
     name = models.CharField(max_length=256)
     slug = models.SlugField(unique=True)
+
+    class Meta:
+        abstract = True
 
     def __str__(self):
         return self.name
 
 
-class Category(models.Model):
-    name = models.CharField(max_length=256)
-    slug = models.SlugField(unique=True)
+class Genre(CommonGenreCat):
+    class Meta:
+        verbose_name = 'Жанр'
+        verbose_name_plural = 'Жанры'
 
-    def __str__(self):
-        return self.name
+
+class Category(CommonGenreCat):
+    class Meta:
+        verbose_name = 'Категория'
+        verbose_name_plural = 'Категории'
 
 
 class Title(models.Model):
     name = models.CharField(max_length=256)
-    year = models.IntegerField()
+
+    def validate_year(value):
+        if not value < timezone.now().year:
+            raise ValidationError('Проверьте год выпуска')
+        return value
+    year = models.PositiveSmallIntegerField(null=True, blank=True, validators=[validate_year])
     description = models.TextField(blank=True, null=True)
     category = models.ForeignKey(Category, on_delete=models.DO_NOTHING,
                                  related_name='titles')

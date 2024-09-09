@@ -1,28 +1,17 @@
 from django.db.models import Avg
-
-from django_filters import CharFilter
-from django_filters.rest_framework import DjangoFilterBackend, FilterSet
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, mixins, viewsets
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
 from reviews.models import Category, Genre, Review, Title
+from .filters import GenreCategorySlugFilter
 from .permissions import IsAdminOrReadOnly, IsHasPermission
 from .serializers import (CategorySerializer, CommentSerializer,
                           GenreSerializer, ReviewSerializer,
                           TitleGetSerializer, TitleSerializer)
 
 
-class GenreCategorySlugFilter(FilterSet):
-    genre = CharFilter(field_name='genre__slug')
-    category = CharFilter(field_name='category__slug')
-
-    class Meta:
-        model = Title
-        fields = ['name', 'year', 'category', 'genre']
-
-
-# Create your views here.
 class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.order_by('id').annotate(
         rating=Avg('reviews__score')
@@ -39,32 +28,25 @@ class TitleViewSet(viewsets.ModelViewSet):
         return TitleSerializer
 
 
-class CategoryViewSet(mixins.CreateModelMixin,
-                      mixins.ListModelMixin,
-                      mixins.DestroyModelMixin,
-                      viewsets.GenericViewSet):
+class CreateListDestroyViewSet(mixins.CreateModelMixin,
+                               mixins.ListModelMixin,
+                               mixins.DestroyModelMixin,
+                               viewsets.GenericViewSet):
+    lookup_field = 'slug'
+    permission_classes = (IsAdminOrReadOnly,)
+    filter_backends = (filters.SearchFilter, filters.OrderingFilter)
+    search_fields = ('name',)
+    ordering = ('id',)
+
+
+class CategoryViewSet(CreateListDestroyViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    lookup_field = 'slug'
-    permission_classes = (IsAdminOrReadOnly,)
-    filter_backends = (filters.SearchFilter, filters.OrderingFilter)
-    search_fields = ('name',)
-    ordering = ('id',)
 
 
-class GenreViewSet(
-    mixins.CreateModelMixin,
-    mixins.ListModelMixin,
-    mixins.DestroyModelMixin,
-    viewsets.GenericViewSet
-):
+class GenreViewSet(CreateListDestroyViewSet):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
-    lookup_field = 'slug'
-    permission_classes = (IsAdminOrReadOnly,)
-    filter_backends = (filters.SearchFilter, filters.OrderingFilter)
-    search_fields = ('name',)
-    ordering = ('id',)
 
 
 class ReviewViewSet(viewsets.ModelViewSet):

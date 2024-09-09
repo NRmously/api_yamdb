@@ -1,4 +1,4 @@
-import datetime as dt
+from django.utils import timezone
 
 from rest_framework import serializers
 
@@ -37,7 +37,7 @@ class TitleSerializer(serializers.ModelSerializer):
         model = Title
 
     def validate_year(self, value):
-        if not (value < dt.date.today().year):
+        if not value < timezone.now().year:
             raise serializers.ValidationError('Проверьте год выпуска')
         return value
 
@@ -83,7 +83,7 @@ class ReviewSerializer(serializers.ModelSerializer):
         return data
 
     class Meta:
-        fields = ('id', 'text', 'author', 'score', 'pub_date')
+        fields = ('id', 'text', 'author', 'score', 'pub_date', 'comments')
         model = Review
 
 
@@ -92,7 +92,8 @@ class CommentSerializer(serializers.ModelSerializer):
         read_only=True,
         slug_field='username',
     )
+    review = serializers.PrimaryKeyRelatedField(read_only=True)
 
     class Meta:
-        fields = ('id', 'text', 'author', 'pub_date')
+        fields = ('id', 'text', 'author', 'pub_date', 'review')
         model = Comment
