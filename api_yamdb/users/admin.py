@@ -14,12 +14,12 @@ class UserAdmin(UserAdmin):
     """
 
     list_display = (
-        "username", "email", "first_name", "last_name", "bio", "role"
+        'username', 'email', 'first_name', 'last_name', 'bio', 'role'
     )
-    empty_value_display = "значение отсутствует"
-    list_editable = ("role", "bio")
-    list_filter = ("username",)
-    search_fields = ("username", "role")
+    empty_value_display = 'значение отсутствует'
+    list_editable = ('role', 'bio')
+    list_filter = ('username',)
+    search_fields = ('username', 'role')
 
 
 admin.site.register(User, UserAdmin)
