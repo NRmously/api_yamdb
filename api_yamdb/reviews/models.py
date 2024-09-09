@@ -1,6 +1,7 @@
-from django.utils import timezone
-from django.core.validators import MaxValueValidator, MinValueValidator, ValidationError
+from django.core.validators import (MaxValueValidator, MinValueValidator,
+                                    ValidationError)
 from django.db import models
+from django.utils import timezone
 
 from users.models import User
 
@@ -35,7 +36,8 @@ class Title(models.Model):
         if not value < timezone.now().year:
             raise ValidationError('Проверьте год выпуска')
         return value
-    year = models.PositiveSmallIntegerField(null=True, blank=True, validators=[validate_year])
+    year = models.PositiveSmallIntegerField(null=True, blank=True,
+                                            validators=[validate_year])
     description = models.TextField(blank=True, null=True)
     category = models.ForeignKey(Category, on_delete=models.DO_NOTHING,
                                  related_name='titles')
