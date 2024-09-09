@@ -115,6 +115,25 @@ class UserCreateSerializer(BaseUser):
     работающий только с полями username и email.
     """
 
+    username = serializers.RegexField(r'^[\w.@+-]+\Z', max_length=150)
+    email = serializers.EmailField(max_length=254)
+
+    def validate(self, data):
+        """Проверка уже зарегестрированных пользователей."""
+        email_exists = User.objects.filter(email=data.get('email')).exists()
+        username_exists = User.objects.filter(
+            username=data.get('username')
+        ).exists()
+        if email_exists and not username_exists:
+            raise serializers.ValidationError(
+                'Пользователь с этой почтой уже существует!'
+            )
+        if username_exists and not email_exists:
+            raise serializers.ValidationError(
+                'Пользователь с таким логином уже существует!'
+            )
+        return data
+
     class Meta:
         model = User
         fields = ('username', 'email')

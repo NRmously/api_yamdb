@@ -115,16 +115,11 @@ class UserCreateViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
         Возвращает JSON-ответ с данными пользователя и статусом 200 (OK).
         """
         serializer = self.serializer_class(data=request.data)
-        if User.objects.filter(
-            username=request.data.get('username'),
-            email=request.data.get('email')
-        ):
-            user = User.objects.get(username=request.data.get('username'))
-            serializer = UserCreateSerializer(user, data=request.data)
         serializer.is_valid(raise_exception=True)
-        serializer.save()
-        username = request.data.get('username')
-        user = User.objects.get(username=username)
+        user, _ = User.objects.get_or_create(
+            username=serializer.validated_data['username'],
+            email=serializer.validated_data['email'],
+        )
         confirmation_code = default_token_generator.make_token(user)
         send_confirmation_code(
             email=user.email, confirmation_code=confirmation_code
