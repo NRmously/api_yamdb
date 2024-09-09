@@ -46,7 +46,10 @@ class Review(models.Model):
         Title, on_delete=models.CASCADE, related_name='reviews'
     )
     score = models.PositiveIntegerField(
-        validators=[MinValueValidator(1), MaxValueValidator(10)]
+        validators=[
+            MinValueValidator(1, 'Нельзя оценить ниже 1'),
+            MaxValueValidator(10, 'Нельзя оценить выше 10'),
+        ],
     )
     pub_date = models.DateField(
         'Дата добавления', auto_now_add=True, db_index=True
