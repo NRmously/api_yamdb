@@ -9,7 +9,7 @@ class BaseUser(serializers.ModelSerializer):
 
     def validate_username(self, data):
         if self.initial_data.get('username') == ('me' or 'admin'):
-            raise serializers.ValidationError("Использовать это имя запрещено")
+            raise serializers.ValidationError('Использовать это имя запрещено')
         return data
 
 
@@ -21,7 +21,7 @@ class UserCreateSerializer(BaseUser):
 
     class Meta:
         model = User
-        fields = ("username", "email")
+        fields = ('username', 'email')
 
 
 class UserRecieveTokenSerializer(serializers.Serializer):
@@ -45,5 +45,5 @@ class UserSerializer(BaseUser):
     class Meta:
         model = User
         fields = (
-            "username", "email", "first_name", "last_name", "bio", "role"
+            'username', 'email', 'first_name', 'last_name', 'bio', 'role'
         )

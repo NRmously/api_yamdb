@@ -1,7 +1,7 @@
 from rest_framework import permissions
 
 
-class IsHasPermission(permissions.BasePermission):
+class IsAdminOrModeratorOrOwnerOrReadOnly(permissions.BasePermission):
     """
     Этот класс разрешений предоставляет доступ к объектам
     на уровне записи пользователю, если он автор объекта,
