@@ -10,10 +10,10 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken
 
-
 from reviews.models import Category, Genre, Review, Title
 from users.models import User
 from .filters import GenreCategorySlugFilter
+from .mixins import CreateListDestroyViewSet
 from .permissions import (IsAdminOrModeratorOrOwnerOrReadOnly,
                           IsAdminOrReadOnly, IsSuperUserOrIsAdmin)
 from .serializers import (CategorySerializer, CommentSerializer,
@@ -38,17 +38,6 @@ class TitleViewSet(viewsets.ModelViewSet):
         if self.action in ['list', 'retrieve']:
             return TitleGetSerializer
         return TitleSerializer
-
-
-class CreateListDestroyViewSet(mixins.CreateModelMixin,
-                               mixins.ListModelMixin,
-                               mixins.DestroyModelMixin,
-                               viewsets.GenericViewSet):
-    lookup_field = 'slug'
-    permission_classes = (IsAdminOrReadOnly,)
-    filter_backends = (filters.SearchFilter, filters.OrderingFilter)
-    search_fields = ('name',)
-    ordering = ('id',)
 
 
 class CategoryViewSet(CreateListDestroyViewSet):

@@ -4,6 +4,7 @@ from django.db import models
 from django.utils import timezone
 
 from users.models import User
+from .validators import validate_year
 
 
 class CommonGenreCat(models.Model):
@@ -31,17 +32,12 @@ class Category(CommonGenreCat):
 
 class Title(models.Model):
     name = models.CharField(max_length=256)
-
-    def validate_year(value):
-        if not value < timezone.now().year:
-            raise ValidationError('Проверьте год выпуска')
-        return value
     year = models.PositiveSmallIntegerField(null=True, blank=True,
                                             validators=[validate_year])
     description = models.TextField(blank=True, null=True)
-    category = models.ForeignKey(Category, on_delete=models.DO_NOTHING,
+    category = models.ForeignKey('Category', on_delete=models.DO_NOTHING,
                                  related_name='titles')
-    genre = models.ManyToManyField(Genre)
+    genre = models.ManyToManyField('Genre')
 
     def __str__(self):
         return self.name

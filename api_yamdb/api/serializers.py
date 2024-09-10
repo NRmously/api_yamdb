@@ -102,7 +102,7 @@ class BaseUser(serializers.ModelSerializer):
     """Базовый класс сериализатора с валидацией для поля username."""
 
     def validate_username(self, data):
-        if data == 'me' or data == 'admin':
+        if data in ('me', 'admin'):
             raise serializers.ValidationError("Использовать это имя запрещено")
         return data
 
